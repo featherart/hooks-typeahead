@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react'
 import { Loading } from './Loading'
-
 //const baseApiUrl = 'https://jsonplaceholder.typicode.com/todos/'
 const baseApiUrl = 'https://any-api.com:8443/http://xkcd.com/'
 
@@ -11,10 +10,10 @@ export const TypeAhead = () => {
   const [data, setData] = useState({})
   const [loading, setLoading] = useState(false)
 
-  const fetchData = param => {
+  async function fetchData(param) {
     setLoading(true)
     const url = `${baseApiUrl}${param}/info.0.json`
-    return fetch(url, {
+    return await fetch(url, {
       headers: {
         'Access-Control-Allow-Origin': '*'
       }
@@ -38,10 +37,11 @@ export const TypeAhead = () => {
   )
 
   return (
-    <div className='typeahead-container'>
+    <div className="typeahead-container">
       <input defaultValue={param} onChange={e => setParam(e.target.value)} />
       {loading && <Loading />}
-      {!loading && data &&
+      {!loading &&
+        data &&
         <div>
           <img src={data.img} />
         </div>}

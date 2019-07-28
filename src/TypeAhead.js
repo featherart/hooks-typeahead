@@ -3,19 +3,12 @@ import { Loading } from './Loading'
 
 const baseApiUrl = 'https://any-api.com:8443/http://xkcd.com/'
 
-// adopted from david walsh debounce
 function debounce(func, wait) {
   let timeout
-
-  return function executedFunction() {
+  return function(...args) {
     const context = this
-    const args = arguments
-    const later = function() {
-      timeout = null
-      func.apply(context, args)
-    }
     clearTimeout(timeout)
-    timeout = setTimeout(later, wait)
+    timeout = setTimeout(() => func.apply(context, args), wait)
   }
 }
 
@@ -28,17 +21,18 @@ export const TypeAhead = () => {
 
   async function fetchData(param) {
     setLoading(true)
+    setData({})
     const url = `${baseApiUrl}${param}/info.0.json`
     return await fetch(url, {
       headers: {
         'Access-Control-Allow-Origin': '*'
       }
     })
-    .then(response => {
-      setLoading(false)
-      return response.json()
-    })
-    .then(data => setData(data))
+      .then(response => {
+        setLoading(false)
+        return response.json()
+      })
+      .then(data => setData(data))
   }
 
   // response to a change in the value of param
@@ -46,7 +40,7 @@ export const TypeAhead = () => {
     () => {
       // if param length is greater than 1 character
       if (param.length) {
-        const newData = debounce(fetchData(param), 500)
+        const newData = debounce(fetchData, 2500)(param)
       }
     },
     [param]
